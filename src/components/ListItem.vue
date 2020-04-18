@@ -70,7 +70,6 @@ export default {
 
       this.itemChecked = !this.itemChecked;
       this.$emit('itemCheck');
-      console.log(this.itemChecked);
     },
     editItem() {
       this.editMode = true;
