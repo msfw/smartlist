@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersist from 'vuex-persist'
 import { uuid } from 'vue-uuid'
-import axios from 'axios';
+import { http } from './http-common';
 import router from '../router';
 
 Vue.use(Vuex)
@@ -156,7 +156,7 @@ export default new Vuex.Store({
       commit('deleteList', payload.sku)
       if (getters.isLoggedIn && payload.listId)
       {
-        axios.delete('http://localhost:3001/list/' + payload.listId,
+        http.delete('/list/' + payload.listId,
         {
           headers: { Authorization: `Bearer ${state.user.token}` }
         });
@@ -166,7 +166,7 @@ export default new Vuex.Store({
       if (payload.id == '') return;
 
       const list = state.lists.find(x => x.sku == payload.sku);
-      axios.put('http://localhost:3001/list/' + payload.id,
+      http.put('/list/' + payload.id,
       {
         user: {
           email: state.user.email
@@ -184,7 +184,7 @@ export default new Vuex.Store({
     loadList({ state, getters, commit }) {
       if (getters.isLoggedIn)
       {
-        axios.get('http://localhost:3001/list',
+        http.get('/list',
         {
           params: { userEmail: state.user.email },
           headers: { Authorization: `Bearer ${state.user.token}` }
@@ -210,7 +210,7 @@ export default new Vuex.Store({
     },
     login({ commit, dispatch }, payload) {
       commit('login'); // show spinner
-      axios.post('http://localhost:3000/auth/authenticate', {
+      http.post('/auth/authenticate', {
         email: payload.email,
         password: payload.password
       })
@@ -227,7 +227,7 @@ export default new Vuex.Store({
       commit('logout');
     },
     register({ commit }, payload) {
-      axios.post('http://localhost:3000/auth/register', {
+      http.post('/auth/register', {
         name: payload.name,
         email: payload.email,
         password: payload.password
@@ -258,7 +258,7 @@ export default new Vuex.Store({
         });
 
         // create lists
-        await axios.post('http://localhost:3001/list', postLists,
+        await http.post('/list', postLists,
         {
           headers: { Authorization: `Bearer ${state.user.token}` }
         })
@@ -271,7 +271,7 @@ export default new Vuex.Store({
         const listsToUpdate = state.lists.filter(l => l._id !== '' && !l.synchronized);
         const promises = listsToUpdate.map(async (list) =>
           {
-            await axios.put('http://localhost:3001/list/' + list._id, {
+            await http.put('/list/' + list._id, {
               user: {
                 email: state.user.email
               },
