@@ -188,10 +188,10 @@ export default new Vuex.Store({
     updateList({ state, commit, dispatch }, payload) {
       const list = state.lists.find(x => x.sku == payload.sku);
 
-      if (payload._id == '')
+      if (payload.id == '')
         dispatch('persistList', [list])
       else {
-        http.put('/list/' + payload._id,
+        http.put('/list/' + payload.id,
           {
             user: {
               email: state.user.email
