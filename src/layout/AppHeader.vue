@@ -223,7 +223,7 @@ export default {
       }
       if (mutation.type === 'login_error') {
         this.loading = false
-        this.errorMsg = mutation.payload.error
+        this.errorMsg = mutation.payload.data.error
       }
     })
   },

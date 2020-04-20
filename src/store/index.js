@@ -219,7 +219,7 @@ export default new Vuex.Store({
         dispatch('synchronize');
       })
       .catch(e => {
-        commit('login_error', e.message);
+        commit('login_error', e.response);
       });
     },
     logout({ commit }) {
@@ -236,7 +236,7 @@ export default new Vuex.Store({
         commit('login_success', response.data);
       })
       .catch(e => {
-        commit('login_error', e.message);
+        commit('login_error', e.response);
         //this.errors.push(e)
       });
     },
