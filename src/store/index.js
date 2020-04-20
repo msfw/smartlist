@@ -35,7 +35,8 @@ export default new Vuex.Store({
       description: '',
       value: 0,
       checked: false
-    }
+    },
+    error: ''
   },
   getters: {
     itemsForList: state => listSku => {
@@ -74,7 +75,7 @@ export default new Vuex.Store({
       //state.list = state.lists.find(x => x.sku == payload.sku);
     },*/
     updateListName(state, payload) {
-      const list = state.lists.find(x => x.sku == payload.sku);
+      let list = state.lists.find(x => x.sku == payload.sku);
 
       list.name = payload.text;
       list.synchronized = false;
@@ -83,14 +84,14 @@ export default new Vuex.Store({
       state.lists = state.lists.filter(x => x.sku !== sku);
     },
     setSynchronized(state, id) {
-      const list = state.lists.find(x => x._id == id);
+      let list = state.lists.find(x => x._id == id);
       list.synchronized = true;
       //state.list = state.lists.find(x => x._id == id);
       //state.list.synchronized = true;
     },
     setIdForList(state, payload) {
-      const list = state.lists.find(x => x.sku == payload.sku);
-      list._id = payload._id;
+      let list = state.lists.find(x => x.sku == payload.sku);
+      list._id = payload.id;
 
       //state.list = state.lists.find(x => x.sku == payload.sku);
       //state.list._id = payload.id;
@@ -143,11 +144,20 @@ export default new Vuex.Store({
       state.user.email = payload.user.email;
       state.user.token = payload.token;
     },
-    login_error() {
-    }
+    login_error(state, error) {
+      var errormsg = '';
+      if (error.response) {
+        errormsg = error.response.data
+      } else if (error.request) {
+        errormsg = error.request
+      } else {
+        errormsg = error.message
+      }
+      state.error = errormsg;
+    },
   },
   actions: {
-    async persistList({ state, commit }, postLists) {      
+    async persistList({ state, commit }, postLists) {
       var data = [];
       postLists.forEach(element => {
         data.push({
@@ -203,7 +213,7 @@ export default new Vuex.Store({
             headers: { Authorization: `Bearer ${state.user.token}` }
           })
           .then(() => {
-            commit('setSynchronized', payload._id);
+            commit('setSynchronized', payload.id);
           });
       }
     },
@@ -239,13 +249,13 @@ export default new Vuex.Store({
         email: payload.email,
         password: payload.password
       })
-        .then(response => {
-          commit('login_success', response.data);
-          dispatch('synchronize');
-        })
-        .catch(e => {
-          commit('login_error', e.response);
-        });
+      .then(response => {
+        commit('login_success', response.data);
+        dispatch('synchronize');
+      })
+      .catch(e => {
+       commit('login_error', e);
+      });
     },
     logout({ commit }) {
       //localStorage.removeItem("token");
@@ -257,13 +267,12 @@ export default new Vuex.Store({
         email: payload.email,
         password: payload.password
       })
-        .then(response => {
-          commit('login_success', response.data);
-        })
-        .catch(e => {
-          commit('login_error', e.response);
-          //this.errors.push(e)
-        });
+      .then(response => {
+        commit('login_success', response.data);
+      })
+      .catch(e => {
+        commit('login_error', e);
+      });
     },
     async synchronize({ state, dispatch }) {
       if (state.lists.length > 0) {

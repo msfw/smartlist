@@ -156,7 +156,7 @@ export default {
   mounted() {
     this.$store.subscribe((mutation) => {
       if (mutation.type === 'setIdForList' && mutation.payload.sku == this.listSku) {
-        this.listId = mutation.payload._id
+        this.listId = mutation.payload.id
       }
     })
   },
