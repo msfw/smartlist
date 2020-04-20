@@ -147,65 +147,77 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    updateListName({commit, getters, dispatch}, payload) {
+    async persistList({ state, commit }, postLists) {
+      await http.post('/list', postLists,
+        {
+          headers: { Authorization: `Bearer ${state.user.token}` }
+        })
+        .then(response => {
+          response.data.lists.forEach(el => {
+            commit('setIdForList', { id: el._id, sku: el.sku });
+          });
+        });
+    },
+    updateListName({ commit, getters, dispatch }, payload) {
       commit('updateListName', payload)
       if (getters.isLoggedIn)
         dispatch('updateList', payload)
     },
     deleteList({ state, commit, getters }, payload) {
       commit('deleteList', payload.sku)
-      if (getters.isLoggedIn && payload.listId)
-      {
+      if (getters.isLoggedIn && payload.listId) {
         http.delete('/list/' + payload.listId,
-        {
-          headers: { Authorization: `Bearer ${state.user.token}` }
-        });
+          {
+            headers: { Authorization: `Bearer ${state.user.token}` }
+          });
       }
     },
-    updateList({ state, commit }, payload) {
-      if (payload.id == '') return;
-
+    updateList({ state, commit, dispatch }, payload) {
       const list = state.lists.find(x => x.sku == payload.sku);
-      http.put('/list/' + payload.id,
-      {
-        user: {
-          email: state.user.email
-        },
-        name: list.name,
-        items: list.items
-      },
-      {
-        headers: { Authorization: `Bearer ${state.user.token}` }
-      })
-      .then(() => {
-        commit('setSynchronized', payload.id);
-      });
+
+      if (payload.id == '')
+        dispatch('persistList', [list])
+      else {
+        http.put('/list/' + payload.id,
+          {
+            user: {
+              email: state.user.email
+            },
+            name: list.name,
+            items: list.items
+          },
+          {
+            headers: { Authorization: `Bearer ${state.user.token}` }
+          })
+          .then(() => {
+            commit('setSynchronized', payload.id);
+          });
+      }
     },
     loadList({ state, getters, commit }) {
-      if (getters.isLoggedIn)
-      {
+      if (getters.isLoggedIn) {
         http.get('/list',
-        {
-          params: { userEmail: state.user.email },
-          headers: { Authorization: `Bearer ${state.user.token}` }
-        })
-        .then(response => {
-          if (state.lists.length > 0) {
-            var existing = new Set(state.lists.map(d => d.sku));
-            var merged = [...state.lists, ...response.data.lists.filter(d => !existing.has(d.sku))];
+          {
+            params: { userEmail: state.user.email },
+            headers: { Authorization: `Bearer ${state.user.token}` }
+          })
+          .then(response => {
+            if (state.lists.length > 0) {
+              var existing = new Set(state.lists.map(d => d.sku));
+              var merged = [...state.lists, ...response.data.lists.filter(d => !existing.has(d.sku))];
 
-            commit('loadList', merged)
-          }
-          else
-            commit('loadList', response.data.lists);
-        });
+              commit('loadList', merged)
+            }
+            else
+              commit('loadList', response.data.lists);
+          });
       }
     },
 
-    updateValue({commit}, payload) {
+    updateValue({ commit }, payload) {
       commit('updateValue', payload);
     },
-    rollbackList({commit}, payload) {
+    rollbackList({ commit }, payload) {
       commit('updateValue', payload);
     },
     login({ commit, dispatch }, payload) {
@@ -214,13 +226,13 @@ export default new Vuex.Store({
         email: payload.email,
         password: payload.password
       })
-      .then(response => {
-        commit('login_success', response.data);
-        dispatch('synchronize');
-      })
-      .catch(e => {
-        commit('login_error', e.response);
-      });
+        .then(response => {
+          commit('login_success', response.data);
+          dispatch('synchronize');
+        })
+        .catch(e => {
+          commit('login_error', e.response);
+        });
     },
     logout({ commit }) {
       //localStorage.removeItem("token");
@@ -232,17 +244,16 @@ export default new Vuex.Store({
         email: payload.email,
         password: payload.password
       })
-      .then(response => {
-        commit('login_success', response.data);
-      })
-      .catch(e => {
-        commit('login_error', e.response);
-        //this.errors.push(e)
-      });
+        .then(response => {
+          commit('login_success', response.data);
+        })
+        .catch(e => {
+          commit('login_error', e.response);
+          //this.errors.push(e)
+        });
     },
-    async synchronize({ state, commit, dispatch }) {
-      if (state.lists.length > 0)
-      {
+    async synchronize({ state, dispatch }) {
+      if (state.lists.length > 0) {
         // insert user object inside every list
         const postLists = [];
         state.lists.filter(l => l._id == '').forEach(el => {
@@ -257,38 +268,27 @@ export default new Vuex.Store({
           });
         });
 
-        // create lists
-        await http.post('/list', postLists,
-        {
-          headers: { Authorization: `Bearer ${state.user.token}` }
-        })
-        .then(response => {
-          response.data.lists.forEach(el => {
-            commit('setIdForList', {id: el._id, sku: el.sku});
-          });
-        });
+        dispatch('persistList', postLists)
 
         const listsToUpdate = state.lists.filter(l => l._id !== '' && !l.synchronized);
-        const promises = listsToUpdate.map(async (list) =>
-          {
-            await http.put('/list/' + list._id, {
-              user: {
-                email: state.user.email
-              },
-              name: list.name,
-              items: list.items
+        const promises = listsToUpdate.map(async (list) => {
+          await http.put('/list/' + list._id, {
+            user: {
+              email: state.user.email
             },
+            name: list.name,
+            items: list.items
+          },
             {
               headers: { Authorization: `Bearer ${state.user.token}` }
             });
-          }
+        }
         );
         await Promise.all(promises);
 
         dispatch('loadList');
       }
-      else
-      {
+      else {
         dispatch('loadList');
       }
     }
