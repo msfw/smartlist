@@ -147,8 +147,21 @@ export default new Vuex.Store({
     }
   },
   actions: {
-    async persistList({ state, commit }, postLists) {
-      await http.post('/list', postLists,
+    async persistList({ state, commit }, postLists) {      
+      var data = [];
+      postLists.forEach(element => {
+        data.push({
+          user: {
+            email: state.user.email
+          },
+          name: element.name,
+          sku: element.sku,
+          items: element.items,
+          type: element.type
+        })
+      });
+
+      await http.post('/list', data,
         {
           headers: { Authorization: `Bearer ${state.user.token}` }
         })
