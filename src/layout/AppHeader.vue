@@ -210,9 +210,6 @@ export default {
       $('.overlay').removeClass('active');
     }
   },
-  created () {
-    this.$store.dispatch('loadList');
-  },
   mounted() {
     this.$store.subscribe((mutation) => {
       if(mutation.type === 'login_success') {
