@@ -90,7 +90,7 @@ export default new Vuex.Store({
     },
     setIdForList(state, payload) {
       const list = state.lists.find(x => x.sku == payload.sku);
-      list._id = payload.id;
+      list._id = payload._id;
 
       //state.list = state.lists.find(x => x.sku == payload.sku);
       //state.list._id = payload.id;
@@ -188,10 +188,10 @@ export default new Vuex.Store({
     updateList({ state, commit, dispatch }, payload) {
       const list = state.lists.find(x => x.sku == payload.sku);
 
-      if (payload.id == '')
+      if (payload._id == '')
         dispatch('persistList', [list])
       else {
-        http.put('/list/' + payload.id,
+        http.put('/list/' + payload._id,
           {
             user: {
               email: state.user.email
@@ -203,7 +203,7 @@ export default new Vuex.Store({
             headers: { Authorization: `Bearer ${state.user.token}` }
           })
           .then(() => {
-            commit('setSynchronized', payload.id);
+            commit('setSynchronized', payload._id);
           });
       }
     },
