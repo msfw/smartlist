@@ -18,6 +18,10 @@ export default {
     readonly: {
       type: Boolean,
       default: false
+    },
+    showUntitled: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -31,7 +35,7 @@ export default {
       if (this.readonly) return;
 
       this.editMode = false;
-      if (this.inputText == '')
+      if (this.showUntitled && this.inputText == '')
         this.inputText = 'Untitled'
       this.$emit('cel-change', this.inputText);
     },

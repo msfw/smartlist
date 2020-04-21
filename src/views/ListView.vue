@@ -7,6 +7,7 @@
       <edit-label
         :editing="name == ''"
         :text="name"
+        show-untitled
         @cel-change="name = $event"
       />
 
@@ -104,11 +105,15 @@ export default {
   },
   computed: {
     list() {
-      return this.$store.state.lists;
+      return this.$store.state.lists.find(x => x.sku === this.listSku);
     },
     name: {
       get () {
-        return this.$store.state.lists.find(x => x.sku === this.listSku).name
+        let list = this.$store.state.lists.find(x => x.sku === this.listSku)
+        if (list)
+          return list.name
+        else
+          return ''
       },
       set (value) {
         this.updateListName(value);
@@ -122,6 +127,11 @@ export default {
   },
   methods: {
     createItem() {
+      if (this.newItemText == '') {
+        this.hideAddItemInput();
+        return;
+      }
+
       this.$store.commit('createItem', { description: this.newItemText, listSku: this.listSku })
       this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
       this.newItemText = ''
@@ -134,8 +144,14 @@ export default {
       this.newItemText = ''
     },
     changeItemText(event, sku) {
-      this.$store.commit('updateItemName', {text: event, sku: sku, listSku: this.listSku});
-      this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+      console.log(event);
+      if (event == '')
+        this.deleteItem(sku)
+      else
+      {
+        this.$store.commit('updateItemName', {text: event, sku: sku, listSku: this.listSku});
+        this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+      }
     },
     updateListName: _.debounce(function(value) {
         this.$store.dispatch('updateListName', { text: value, id: this.listId, sku: this.listSku });
@@ -159,6 +175,9 @@ export default {
         this.listId = mutation.payload.id
       }
     })
+
+    if (!this.list)
+      this.$router.push('/')
   },
 }
 </script>

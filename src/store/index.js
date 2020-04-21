@@ -48,7 +48,9 @@ export default new Vuex.Store({
     },
     getListId: state => sku => {
       const list = state.lists.find(x => x.sku == sku);
-      return list._id;
+      if (list)
+        return list._id;
+      else return '';
     }
   },
   mutations: {
@@ -77,8 +79,10 @@ export default new Vuex.Store({
     updateListName(state, payload) {
       let list = state.lists.find(x => x.sku == payload.sku);
 
-      list.name = payload.text;
-      list.synchronized = false;
+      if (list) {
+        list.name = payload.text;
+        list.synchronized = false;
+      }
     },
     deleteList(state, sku) {
       state.lists = state.lists.filter(x => x.sku !== sku);
