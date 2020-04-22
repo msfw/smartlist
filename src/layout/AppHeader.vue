@@ -184,6 +184,7 @@ export default {
     },
     logout() {
       this.$store.commit('logout');
+      this.$store.commit('clearLists');
       this.dismiss();
     },
     login() {
@@ -225,6 +226,7 @@ export default {
         this.loading = false;
 
         this.modal.visible = false;
+        this.clearFields();
         this.dismiss();
       }
       if (mutation.type === 'login_error') {

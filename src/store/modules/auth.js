@@ -51,7 +51,7 @@ const mutations = {
 }
 
 const actions = {
-  login({ commit/*, dispatch*/ }, payload) {
+  login({ commit, dispatch }, payload) {
     commit('login');
     http.post('/auth/authenticate', {
       email: payload.email,
@@ -59,7 +59,7 @@ const actions = {
     })
     .then(response => {
       commit('login_success', response.data);
-      //dispatch('synchronize');
+      dispatch('synchronize');
     })
     .catch(e => {
       commit('login_error', e);

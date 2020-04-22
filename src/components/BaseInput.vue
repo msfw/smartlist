@@ -26,7 +26,7 @@
         </div>
         <slot v-bind="slotData">
             <input
-                    autocomplete="off" 
+                    autocomplete="off"
                     :value="value"
                     v-on="listeners"
                     v-bind="$attrs"

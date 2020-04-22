@@ -13,7 +13,7 @@
       <div class="mylist-content">
 
           <div class="card cardlist align-left" style="width: 18rem;"
-            v-for="list in $store.state.lists"
+            v-for="list in $store.state.list.lists"
             :key="list.sku"
             @click.stop="editList(list.sku)"
           >
@@ -92,12 +92,9 @@ export default {
       this.modal.visible = true
     },
     editList(sku) {
-      //this.$router.push('/list/'+sku);
       this.$store.commit('editAndViewList', { listSku: sku });
-      //this.$store.commit('editList', { sku });
     },
     newList() {
-      //this.$store.commit('newList', { listType: this.modal.listType});
       this.$store.commit('createAndViewList', { listType: this.modal.listType});
     },
     deleteList(sku, id) {

@@ -1,9 +1,7 @@
 <template>
     <label class="custom-toggle">
         <input type="checkbox"
-               v-model="model"
-               v-bind="$attrs"
-               v-on="$listeners">
+               v-model="model">
         <span class="custom-toggle-slider rounded-circle"></span>
     </label>
 </template>

@@ -14,7 +14,6 @@ const state = {
     synchronized: false,
     createdAt: new Date()
   },
-  editingList: { },
   item: {
     sku: '',
     description: '',
@@ -39,7 +38,7 @@ const getters = {
 }
 const mutations = {
   createAndViewList(state, payload) {
-    state.editingList = {
+    const list = {
       _id: '',
       sku: uuid.v1(),
       name: '',
@@ -49,8 +48,13 @@ const mutations = {
       synchronized: false,
       createdAt: new Date()
     }
+    const newList = [
+      ...state.lists,
+      list
+    ]
+    state.lists = newList;
 
-    router.push('list/' + state.editingList.sku);
+    router.push('list/' + list.sku);
   },
   editAndViewList(state, { listSku }) {
     var list = state.lists.find(l => l.sku === listSku)
@@ -58,10 +62,6 @@ const mutations = {
       state.error = 'The list does not exists.'
       return;
     }
-
-    var copyList = {};
-    Object.assign(copyList, list);
-    state.editingList = copyList
 
     router.push('list/' + listSku);
   },
@@ -121,6 +121,7 @@ const mutations = {
   checkItem(state, payload) {
     var item = state.lists.find(x => x.sku == payload.listSku).items.find(i => i.sku === payload.sku);
     item.checked = !item.checked;
+    item.value = payload.value;
   },
   updateItemName(state, payload) {
     var item = state.lists.find(x => x.sku == payload.listSku).items.find(i => i.sku === payload.sku);
@@ -148,33 +149,51 @@ const mutations = {
 
     // update list object
     //state.list = state.lists.find(x => x.sku == payload.listSku);
+  },
+
+  handleError(state, {error, action}) {
+    var errormsg = '';
+    if (error.response) {
+      errormsg = error.response.data.error ? error.response.data.error : `Failed to ${action}, try again later.`
+    } else if (error.request) {
+      errormsg = error.request
+    } else {
+      errormsg = error.message
+    }
+    state.error = errormsg;
+  },
+  clearLists(state) {
+    state.lists = []
   }
 }
 
 const actions = {
-  async persistList({ state, commit }, postLists) {
-    var data = [];
-    postLists.forEach(element => {
-      data.push({
-        user: {
-          email: state.user.email
-        },
-        name: element.name,
-        sku: element.sku,
-        items: element.items,
-        type: element.type
-      })
-    });
+  async persistList({ commit, getters }, postLists) {
+    if (getters.isLoggedIn) {
 
-    await http.post('/list', data,
-    {
-      headers: { Authorization: `Bearer ${state.user.token}` }
-    })
-    .then(response => {
-      response.data.lists.forEach(el => {
-        commit('setIdForList', { id: el._id, sku: el.sku });
+      var data = [];
+        postLists.forEach(element => {
+        data.push({
+          user: {
+            email: getters.getUserEmail
+          },
+          name: element.name,
+          sku: element.sku,
+          items: element.items,
+          type: element.type
+        })
       });
-    });
+
+      await http.post('/list', data,
+      {
+        headers: { Authorization: `Bearer ${getters.getUserToken}` }
+      })
+      .then(response => {
+        response.data.lists.forEach(el => {
+          commit('setIdForList', { id: el._id, sku: el.sku });
+        });
+      });
+    }
   },
 
   updateListName({ commit, getters, dispatch }, payload) {
@@ -182,16 +201,16 @@ const actions = {
     if (getters.isLoggedIn)
       dispatch('updateList', payload)
   },
-  deleteList({ state, commit, getters }, payload) {
+  deleteList({ commit, getters }, payload) {
     commit('deleteList', payload.listSku)
     if (getters.isLoggedIn && payload.listId) {
       http.delete('/list/' + payload.listId,
         {
-          headers: { Authorization: `Bearer ${state.user.token}` }
+          headers: { Authorization: `Bearer ${getters.getUserToken}` }
         });
     }
   },
-  updateList({ state, commit, dispatch }, payload) {
+  updateList({ state, commit, getters, dispatch }, payload) {
     const list = state.lists.find(x => x.sku == payload.sku);
 
     if (payload.id == '')
@@ -200,13 +219,14 @@ const actions = {
       http.put('/list/' + payload.id,
         {
           user: {
-            email: state.user.email
+            email: getters.getUserEmail
           },
           name: list.name,
-          items: list.items
+          items: list.items,
+          type: list.type
         },
         {
-          headers: { Authorization: `Bearer ${state.user.token}` }
+          headers: { Authorization: `Bearer ${getters.getUserToken}` }
         })
         .then(() => {
           commit('setSynchronized', payload.id);
@@ -230,15 +250,7 @@ const actions = {
           else
             commit('loadList', response.data.lists);
         }).catch(error => {
-          var errormsg = '';
-          if (error.response) {
-            errormsg = error.response.data.error ? error.response.data.error : 'An error has occurred while loading your lists.'
-          } else if (error.request) {
-            errormsg = error.request
-          } else {
-            errormsg = error.message
-          }
-          console.log(errormsg);
+          commit('handleError', { error, action: 'load list' })
         })
     }
   },
@@ -250,14 +262,14 @@ const actions = {
     commit('updateValue', payload);
   },
 
-  async synchronize({ state, dispatch }) {
+  async synchronize({ state, getters, dispatch }) {
     if (state.lists.length > 0) {
       // insert user object inside every list
       const postLists = [];
       state.lists.filter(l => l._id == '').forEach(el => {
         postLists.push({
           user: {
-            email: state.user.email
+            email: getters.getUserEmail
           },
           name: el.name,
           sku: el.sku,
@@ -272,13 +284,13 @@ const actions = {
       const promises = listsToUpdate.map(async (list) => {
         await http.put('/list/' + list._id, {
           user: {
-            email: state.user.email
+            email: getters.getUserEmail
           },
           name: list.name,
           items: list.items
         },
         {
-          headers: { Authorization: `Bearer ${state.user.token}` }
+          headers: { Authorization: `Bearer ${getters.getUserToken}` }
         });
       }
       );
