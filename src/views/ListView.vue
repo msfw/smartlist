@@ -143,8 +143,7 @@ export default {
       this.itemInputVisible = false;
       this.newItemText = ''
     },
-    changeItemText(event, sku) {
-      console.log(event);
+    changeItemText(event, sku) {      
       if (event == '')
         this.deleteItem(sku)
       else
