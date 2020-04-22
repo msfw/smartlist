@@ -1,27 +1,26 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import AppHeader from '../layout/AppHeader.vue'
-import MainList from '../views/Lists.vue'
-import ListView from '../views/ListView.vue'
+import Home from '../views/Home.vue'
+import List from '../views/List.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'Lists',
+    name: 'home',
     components: {
-      //sidebar: SideBar,
       header: AppHeader,
-      default: MainList
+      default: Home
     }
   },
   {
     path: '/list/:sku',
-    name: 'ListView',
+    name: 'list',
     components: {
       header: AppHeader,
-      default: ListView
+      default: List
     }
   },
 ]

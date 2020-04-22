@@ -4,12 +4,14 @@ import router from './router'
 import store from './store'
 import Smarket from './plugins/smarket-kit';
 import jQuery from 'jquery'
+import VueCurrencyInput from 'vue-currency-input'
 
 //import './assets/scss/app.scss'
 import 'popper.js'
 import 'bootstrap'
 window.$ = window.jQuery = jQuery
 
+Vue.use(VueCurrencyInput)
 
 Vue.config.productionTip = false
 Vue.use(Smarket);

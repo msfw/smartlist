@@ -163,8 +163,17 @@ export default {
       name: '',
       email: '',
       password: '',
-      loading: false,
-      errorMsg: ''
+      loading: false
+    }
+  },
+  computed: {
+    errorMsg: {
+      get() {
+        return this.$store.state.auth.error
+      },
+      set(value) {
+        this.$store.state.auth.error = value
+      }
     }
   },
   methods: {
@@ -175,6 +184,7 @@ export default {
     },
     logout() {
       this.$store.commit('logout');
+      this.$store.commit('clearLists');
       this.dismiss();
     },
     login() {
@@ -216,13 +226,14 @@ export default {
         this.loading = false;
 
         this.modal.visible = false;
+        this.clearFields();
         this.dismiss();
       }
       if (mutation.type === 'login_error') {
         this.loading = false
-        this.errorMsg = mutation.payload.data.error
       }
     })
+    this.errorMsg = ''
   },
 }
 </script>

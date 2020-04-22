@@ -3,16 +3,21 @@
     class="d-flex item-container list-item" :class="{checked : itemChecked}"
     @click.stop="check()"
   >
+
     <div class="p-2" :key="checkIcon" >
-        <i :class="checkIcon" class=""></i>
-        <edit-label
-          :editing="editing"
-          :readonly="!editing"
-          :text="description"
-          :key="editing"
-          @cel-change="textChanged"
-        >
-        </edit-label>
+      <i :class="checkIcon" class=""></i>
+    </div>
+    <div class="p-2 item-text" >
+          <edit-label
+            :editing="editing"
+            :readonly="!editing"
+            :text="description"
+            :key="editing"
+            @cel-change="textChanged"
+          >
+          </edit-label>
+          <small v-if="this.showValue" class="item-text-value">{{ new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(this.value) }}</small>
+
     </div>
 
     <div class="p-2" >
@@ -38,6 +43,18 @@ export default {
       default: ''
     },
     checked: {
+      type: Boolean,
+      default: false
+    },
+    value: {
+      type: Number,
+      default: 0
+    },
+    showValue : {
+      type: Boolean,
+      default: false
+    },
+    static: {
       type: Boolean,
       default: false
     }
@@ -68,7 +85,8 @@ export default {
     check() {
       if (this.editing) return;
 
-      this.itemChecked = !this.itemChecked;
+      if (!this.static)
+        this.itemChecked = !this.itemChecked;
       this.$emit('itemCheck');
     },
     editItem() {
