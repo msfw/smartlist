@@ -1,5 +1,5 @@
 {
-  "name": "smarket-list",
+  "name": "smart-list",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -7,7 +7,6 @@
     "build": "vue-cli-service build",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
-    "postinstall": "if test \"$NODE_ENV\" = \"production\" ; then npm run build ; fi ",
     "start": "node server.js"
   },
   "dependencies": {

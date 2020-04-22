@@ -31,10 +31,10 @@
 
     </div>
 
-    <div v-if="$store.state.lists.find(l => l.sku === this.listSku)" :key="this.listSku">
+    <div v-if="this.list" :key="this.listSku">
       <div
         class="item-container"
-        v-for="item in $store.state.lists.find(l => l.sku === this.listSku).items.filter(i => !i.checked)"
+        v-for="item in this.list.items.filter(i => !i.checked)"
         :key="item.sku"
       >
 
@@ -51,12 +51,12 @@
       </div>
     </div>
 
-    <div v-if="$store.state.lists.find(l => l.sku === this.listSku).items.filter(i => i.checked).length > 0">
+    <div v-if="this.list && this.list.items.filter(i => i.checked).length > 0">
       <h5 class="item-header text-muted">Done</h5>
 
       <div
         class="item-container"
-        v-for="item in $store.state.lists.find(l => l.sku === this.listSku).items.filter(i => i.checked)"
+        v-for="item in this.list.items.filter(i => i.checked)"
         :key="item.sku"
         @click.stop="check(item)"
       >
@@ -105,13 +105,12 @@ export default {
   },
   computed: {
     list() {
-      return this.$store.state.lists.find(x => x.sku === this.listSku);
+      return this.$store.state.list.lists.find(x => x.sku === this.listSku);
     },
     name: {
       get () {
-        let list = this.$store.state.lists.find(x => x.sku === this.listSku)
-        if (list)
-          return list.name
+        if (this.list)
+          return this.list.name
         else
           return ''
       },
@@ -120,12 +119,11 @@ export default {
       }
     }
   },
-  created() {
-    this.listSku = this.$route.params.sku;
-    this.listId = this.$store.getters.getListId(this.listSku);
-    this.debouncedListName = _.debounce(this.updateListName, 1500);
-  },
   methods: {
+    updateListName: _.debounce(function(value) {
+        this.$store.dispatch('updateListName', { text: value, id: this.listId, sku: this.listSku });
+    }, 100),
+
     createItem() {
       if (this.newItemText == '') {
         this.hideAddItemInput();
@@ -133,7 +131,7 @@ export default {
       }
 
       this.$store.commit('createItem', { description: this.newItemText, listSku: this.listSku })
-      this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+      this.updateList()
       this.newItemText = ''
     },
     showAddItemInput() {
@@ -144,29 +142,29 @@ export default {
       this.newItemText = ''
     },
     changeItemText(event, sku) {
-      console.log(event);
       if (event == '')
         this.deleteItem(sku)
       else
       {
         this.$store.commit('updateItemName', {text: event, sku: sku, listSku: this.listSku});
-        this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+        this.updateList()
       }
     },
-    updateListName: _.debounce(function(value) {
-        this.$store.dispatch('updateListName', { text: value, id: this.listId, sku: this.listSku });
-    }, 100),
     check(sku) {
       this.$store.commit('checkItem', { listSku: this.listSku, sku: sku });
-      this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+      this.updateList()
     },
     deleteItem(sku) {
       this.$store.commit('deleteItem', { sku: sku, listSku: this.listSku });
-      this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
+      this.updateList()
     },
     deleteList() {
-      this.$store.dispatch('deleteList', { listId: this.listId, sku: this.listSku });
+      this.$store.dispatch('deleteList', { listId: this.listId, listSku: this.listSku });
       this.$router.push('/');
+    },
+
+    updateList() {
+      this.$store.dispatch('updateList', { id: this.listId, sku: this.listSku });
     }
   },
   mounted() {
@@ -175,9 +173,14 @@ export default {
         this.listId = mutation.payload.id
       }
     })
-
+  },
+  created() {
+    this.listSku = this.$route.params.sku;
+    this.listId = this.$store.getters.getListId(this.listSku);
     if (!this.list)
       this.$router.push('/')
+
+    this.debouncedListName = _.debounce(this.updateListName, 1500);
   },
 }
 </script>

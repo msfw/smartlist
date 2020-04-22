@@ -163,8 +163,17 @@ export default {
       name: '',
       email: '',
       password: '',
-      loading: false,
-      errorMsg: ''
+      loading: false
+    }
+  },
+  computed: {
+    errorMsg: {
+      get() {
+        return this.$store.state.auth.error
+      },
+      set(value) {
+        this.$store.state.auth.error = value
+      }
     }
   },
   methods: {
@@ -220,9 +229,9 @@ export default {
       }
       if (mutation.type === 'login_error') {
         this.loading = false
-        this.errorMsg = mutation.payload.data.error
       }
     })
+    this.errorMsg = ''
   },
 }
 </script>
