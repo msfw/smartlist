@@ -86,7 +86,11 @@ main {
 
 .input-border{
   border:1px solid $orange;
-  border-radius: 10px;
+  border-radius: 10px;  
+}
+
+.input-border:focus{
+  outline: none !important;
 }
 
 .modal-input .form-control:focus {

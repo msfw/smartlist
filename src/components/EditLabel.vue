@@ -51,8 +51,6 @@ export default {
 </script>
 <style scoped>
 .container-edit-label {
-  display: inline;
-  border-radius: 10px;
-  border: solid 1px;
+  display: inline;  
 }
 </style>
