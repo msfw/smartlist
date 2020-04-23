@@ -6,8 +6,7 @@
     <div class="d-flex justify-content-between list-header">
       <edit-label
         :editing="name == ''"
-        :text="name"
-        :place-holder="'List name'"        
+        :text="name"          
         show-untitled
         @cel-change="name = $event"
       />

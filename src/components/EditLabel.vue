@@ -1,6 +1,6 @@
 <template>
   <div class="container-edit-label" :class="{readonly: !editMode}">
-      <input class="input-border" v-if="editMode" type="text" v-focus @focusout="exitEdit" @keypress.enter="exitEdit" v-model="inputText" :placeholder="placeHolder"/>
+      <input class="input-border" v-if="editMode" type="text" v-focus @focusout="exitEdit" @keypress.enter="exitEdit" v-model="inputText"/>
       <span v-if="!editMode" @click="enterEdit">{{ inputText }}</span>
   </div>
 </template>
@@ -22,10 +22,6 @@ export default {
     showUntitled: {
       type: Boolean,
       default: false
-    },
-    placeHolder:{
-      type: String,
-      default: ''
     }
   },
   data() {
