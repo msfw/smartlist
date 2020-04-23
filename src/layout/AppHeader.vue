@@ -9,7 +9,7 @@
 
             <div class="sidebar-header">
               <img src="../assets/logo.png" height="60" width="60" alt="logo"/>
-                <h3>Smarketlist</h3>
+                <h3>Smart list</h3>
             </div>
 
             <ul class="list-unstyled components">
