@@ -1,6 +1,6 @@
 <template>
   <div class="container-edit-label" :class="{readonly: !editMode}">
-      <input v-if="editMode" type="text" v-focus @focusout="exitEdit" @keypress.enter="exitEdit" v-model="inputText"/>
+      <input class="input-edit-label" v-if="editMode" type="text" v-focus @focusout="exitEdit" @keypress.enter="exitEdit" v-model="inputText"/>
       <span v-if="!editMode" @click="enterEdit">{{ inputText }}</span>
   </div>
 </template>
@@ -52,5 +52,8 @@ export default {
 <style scoped>
 .container-edit-label {
   display: inline;
+}
+.input-edit-label{
+  border-radius: 10px;
 }
 </style>
