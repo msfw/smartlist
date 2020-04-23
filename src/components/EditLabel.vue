@@ -55,5 +55,6 @@ export default {
 }
 .input-edit-label{
   border-radius: 10px;
+  border: solid 1px;
 }
 </style>
