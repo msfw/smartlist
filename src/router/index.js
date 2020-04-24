@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import AppHeader from '../layout/AppHeader.vue'
+//import AppFooter from '../layout/AppFooter.vue'
 import Home from '../views/Home.vue'
 import List from '../views/List.vue'
 
@@ -20,7 +21,8 @@ const routes = [
     name: 'list',
     components: {
       header: AppHeader,
-      default: List
+      default: List,
+      //footer: AppFooter
     }
   },
 ]

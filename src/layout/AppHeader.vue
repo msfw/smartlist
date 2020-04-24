@@ -13,22 +13,20 @@
             </div>
 
             <ul class="list-unstyled components">
-                <p>Login to be able to see your lists from multiple devices</p>
+                <p v-if="isAuthenticated">Bem vindo, {{ $store.getters.getUserName }}</p>
 
-                <li v-if="!$store.getters.isLoggedIn">
+                <p v-if="!isAuthenticated">Login to be able to see your lists from multiple devices</p>
+
+                <li v-if="!isAuthenticated">
                     <a href="#" @click="modal.visible = true">Login</a>
                 </li>
+
+
                 <li class="active" v-if="false">
                     <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
                         <li>
                             <a href="#">Home 1</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 2</a>
-                        </li>
-                        <li>
-                            <a href="#">Home 3</a>
                         </li>
                     </ul>
                 </li>
@@ -37,7 +35,7 @@
                 </li>
             </ul>
 
-            <ul class="list-unstyled CTAs" v-if="$store.getters.isLoggedIn">
+            <ul class="list-unstyled CTAs" v-if="isAuthenticated">
                 <li>
                     <a href="#" @click="logout()" class="article">Logout</a>
                 </li>
@@ -174,6 +172,9 @@ export default {
       set(value) {
         this.$store.state.auth.error = value
       }
+    },
+    isAuthenticated() {
+      return this.$store.getters.isLoggedIn;
     }
   },
   methods: {

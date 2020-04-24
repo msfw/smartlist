@@ -5,6 +5,16 @@
 @import './custom/toggle';
 @import "./custom/mixins/screen";
 
+.footer {
+  position: fixed;
+  height: 100px;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: red;
+  color: white;
+  text-align: center;
+}
 
 body {
     font: 400 14px Nunito, sans-serif !important;
@@ -22,6 +32,10 @@ p {
 
 $main-gradient: linear-gradient(90deg, rgba(176,141,153,1) 0%, rgba(240,153,149,1) 27%, rgba(253,153,116,1) 100%);
 $card-gradient: linear-gradient(0deg, rgb(245, 131, 96) 0%, rgba(253,153,116,1) 60%);
+
+.orange {
+  color: $orange !important;
+}
 
 .item-header {
   text-align: left;
@@ -280,6 +294,7 @@ main {
         outline: none;
         border: none;
         border-width: 0rem;
+        background: transparent;
     }
 }
 
@@ -299,6 +314,41 @@ main {
     word-wrap:break-word;
 }
 
+
+@include respond-below(sm) {
+
+  .item-text {
+    
+      
+    max-width: 195px;
+    
+    
+    .container-edit-label,
+    .container-edit-label>input {
+      max-width: 100% !important;
+    }
+  }
+
+}
+
+/*
+.item-text {
+
+  @include respond-below(sm) {
+    
+    .container-edit-label:has(input) {    
+      color: black !important;
+      
+      max-width: 50% !important;
+      
+      input {
+        max-width: 100% !important;
+      }
+      
+    }
+  }
+}
+*/
 
 .list-settings {
     margin-bottom: 30px;

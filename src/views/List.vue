@@ -56,7 +56,7 @@
           :sku="item.sku"
           :static="true"
           @name-change="changeItemText($event, item.sku)"
-          @itemCheck="check(item.sku)"
+          @itemCheck="check(item.sku, item.description)"
           @delete="deleteItem(item.sku)"
         >
         </list-item>
@@ -65,7 +65,11 @@
     </div>
 
     <div v-if="this.list && this.list.items.filter(i => i.checked).length > 0">
-      <h5 class="item-header text-muted">Done</h5>
+
+      <div class="d-flex justify-content-between">
+        <h5 class="item-header text-muted">Done</h5>
+        <h5 class="item-header text-muted orange" v-if="listPrecified">{{ totalValue }}</h5>
+      </div>
 
       <div
         class="item-container"
@@ -196,6 +200,11 @@ export default {
         this.updateList()
       }
     },
+    totalValue() {
+      var total = 0;
+      this.list.items.filter(i => i.checked).forEach(v => total += v.value);
+      return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(total);
+    },
     name: {
       get () {
         if (this.list)
@@ -242,12 +251,21 @@ export default {
         this.updateList()
       }
     },
-    check(sku) {
+    getQuantity(description) {
+      var r = /\d+/g;
+      var m;
+      var qtd = 0;
+      if ((m = r.exec(description)) != null)
+        qtd = m[0];
+      return parseInt(qtd);
+    },
+    check(sku, description) {
       // show modal
       if (this.listPrecified) {
+        var qtd =this.getQuantity(description);
+        this.checkmodal.quantity = qtd != 0 ? qtd : 1;
         this.checkmodal.visible = true;
         this.checkmodal.itemSku = sku;
-        this.checkmodal.quantity = 1;
         this.$nextTick(() => this.$refs.modalValue.$el.focus())
       }
       else
@@ -260,6 +278,20 @@ export default {
         sku: this.checkmodal.itemSku,
         value: this.checkmodal.value * this.checkmodal.quantity
       });
+
+      if (this.listPrecified) {
+        var desc = this.list.items.find(i => i.sku == this.checkmodal.itemSku).description;
+        var qtd = this.getQuantity(desc);
+        if (qtd == 0 && this.checkmodal.quantity > 1) {
+          desc = this.checkmodal.quantity + ' ' + desc;
+          this.$store.commit('updateItemName',
+          {
+            text: desc,
+            sku: this.checkmodal.itemSku,
+            listSku: this.listSku
+          });
+        }
+      }
       this.resetModal()
       this.updateList()
     },

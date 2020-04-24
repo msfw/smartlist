@@ -215,7 +215,8 @@ const actions = {
 
     if (payload.id == '')
       dispatch('persistList', [list])
-    else {
+    else if (getters.isLoggedIn)
+    {
       http.put('/list/' + payload.id,
         {
           user: {
@@ -263,7 +264,7 @@ const actions = {
   },
 
   async synchronize({ state, getters, dispatch }) {
-    if (state.lists.length > 0) {
+    if (getters.isLoggedIn && state.lists.length > 0) {
       // insert user object inside every list
       const postLists = [];
       state.lists.filter(l => l._id == '').forEach(el => {

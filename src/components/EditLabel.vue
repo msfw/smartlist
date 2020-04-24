@@ -40,7 +40,8 @@ export default {
       this.$emit('cel-change', this.inputText);
     },
     enterEdit() {
-      this.editMode = true;
+      if (!this.readonly)
+        this.editMode = true;
     }
   },
   created () {
@@ -51,6 +52,6 @@ export default {
 </script>
 <style scoped>
 .container-edit-label {
-  display: inline;  
+  display: inline;
 }
 </style>
