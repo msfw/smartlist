@@ -111,7 +111,7 @@
                               class="modal-input"
                               v-model="name"
                               placeholder="Name"
-                              addon-left-icon="ni ni-lock-circle-open">
+                              addon-left-icon="ni ni-circle-08">
                   </base-input>
                   <base-input alternative
                               v-model="email"
