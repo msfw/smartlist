@@ -4,7 +4,7 @@
     <div class="d-flex align-items-start">
       <button type="button" @click="$router.push('/')" class="btn btn-link btn-link-orange" style="padding-left: 0px;">
         <i  class="fas fa-chevron-left"></i>
-        Home
+         {{ $t('buttons.home') }}
       </button>
     </div>
 
@@ -16,12 +16,12 @@
         @cel-change="name = $event"
       />
 
-      <button type="button" @click="showAddItemInput()" v-if="!itemInputVisible" :key="itemInputVisible" class="btn btn-link btn-link-add">Add item <i  class="fas fa-plus"></i></button>
-      <button type="button" @click="hideAddItemInput()" v-else :key="itemInputVisible" class="btn btn-link btn-link-remove">Cancel <i  class="fas fa-times"></i></button>
+      <button type="button" @click="showAddItemInput()" v-if="!itemInputVisible" :key="itemInputVisible" class="btn btn-link btn-link-add">{{ $t('buttons.addItem') }} <i  class="fas fa-plus"></i></button>
+      <button type="button" @click="hideAddItemInput()" v-else :key="itemInputVisible" class="btn btn-link btn-link-remove">{{ $t('buttons.cancel') }} <i  class="fas fa-times"></i></button>
     </div>
 
     <div class="list-settings">
-      <label for="precified">Precified list</label>
+      <label for="precified">{{ $t('labels.precifiedList') }} </label>
       <base-switch name="precified" v-model="listPrecified"></base-switch>
 
     </div>
@@ -67,7 +67,7 @@
     <div v-if="this.list && this.list.items.filter(i => i.checked).length > 0">
 
       <div class="d-flex justify-content-between">
-        <h5 class="item-header text-muted">Done</h5>
+        <h5 class="item-header text-muted">{{ $t('labels.done') }}</h5>
         <h5 class="item-header text-muted orange" v-if="listPrecified">{{ totalValue }}</h5>
       </div>
 
@@ -94,7 +94,7 @@
 
 
     <div class="items-footer">
-      <button class="btn btn-outline-danger" @click="deleteList()">Delete list</button>
+      <button class="btn btn-outline-danger" @click="deleteList()">{{ $t('buttons.deleteList') }}</button>
     </div>
 
     <modal :show.sync="checkmodal.visible"
@@ -105,10 +105,7 @@
             body-classes="px-lg-5 py-lg-5"
             class="border-0 bg-white">
         <template >
-              <div class="text-center text-muted mb-4">
-                  <small>Sign in with</small>
-              </div>
-              <form @submit.prevent="checkItem()" role="form">
+              <form @submit.prevent="checkItem()" role="form" style="margin-top: 20px">
 
                 <p class="modal-input">
                   <number-input :attrs="{ class: 'form-control'}"
@@ -134,8 +131,8 @@
                 </base-input>
 
                   <div class="d-flex justify-content-between">
-                      <base-button type="default" tabindex="-1" class="my-4 btn-default" @click="checkmodal.visible = false">Cancel</base-button>
-                      <base-button type="orange" nativeType="submit" class="my-4 btn-orange">Confirm</base-button>
+                      <base-button type="default" tabindex="-1" class="my-4 btn-default" @click="checkmodal.visible = false">{{ $t('buttons.cancel') }}</base-button>
+                      <base-button type="orange" nativeType="submit" class="my-4 btn-orange">{{ $t('buttons.confirm') }}</base-button>
                   </div>
                   <div v-if="checkmodal.errorMsg" class="text-center red">
                     {{ checkmodal.errorMsg }}

@@ -15,10 +15,10 @@
             <ul class="list-unstyled components">
                 <p v-if="isAuthenticated">Bem vindo, {{ $store.getters.getUserName }}</p>
 
-                <p v-if="!isAuthenticated">Login to be able to see your lists from multiple devices</p>
+                <p v-if="!isAuthenticated">{{ $t('labels.loginDescription') }}</p>
 
                 <li v-if="!isAuthenticated">
-                    <a href="#" @click="modal.visible = true">Login</a>
+                    <a href="#" @click="modal.visible = true">{{ $t('buttons.login') }}</a>
                 </li>
 
 
@@ -37,7 +37,7 @@
 
             <ul class="list-unstyled CTAs" v-if="isAuthenticated">
                 <li>
-                    <a href="#" @click="logout()" class="article">Logout</a>
+                    <a href="#" @click="logout()" class="article">{{ $t('buttons.logout') }}</a>
                 </li>
             </ul>
         </nav>
@@ -70,74 +70,74 @@
             class="border-0 bg-white">
           <template v-if="modal.login">
               <img src="../assets/logo.png" height="60" width="60" alt="logo"/>
-              <div class="text-center text-muted mb-4">
-                  <small>Sign in with</small>
+              <div class="text-center  mb-4" v-show="false">
+                  <small>{{ $t('labels.loginModalDescription') }}</small>
               </div>
-              <form @submit.prevent="login()" role="form">
+              <form @submit.prevent="login()" role="form" style="margin-top: 20px">
                   <base-input alternative
                               v-model="email"
                               class="mb-3 modal-input"
-                              placeholder="Email"
+                              :placeholder="$t('labels.email')"
                               addon-left-icon="ni ni-email-83">
                   </base-input>
                   <base-input alternative
                               v-model="password"
                               type="password"
                               class="modal-input"
-                              placeholder="Password"
+                              :placeholder="$t('labels.password')"
                               addon-left-icon="ni ni-lock-circle-open">
                   </base-input>
                   <div class="text-center">
-                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4 btn-orange">Sign In</base-button>
+                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4 btn-orange">{{ $t('buttons.login') }}</base-button>
                       <button v-else class="btn my-4 btn-orange" type="button" disabled>
                         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                        Loading...
+                        {{ $t('buttons.loading') }}
                       </button>
                   </div>
                   <div v-if="errorMsg" class="text-center red">
                     {{ errorMsg }}
                   </div>
               </form>
-              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">Or create your account now</button>
+              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">{{ $t('buttons.createAccountDescription') }}</button>
           </template>
           <template v-else>
               <img src="../assets/logo.png" height="60" width="60" alt="logo"/>
-              <div class="text-center text-muted mb-4">
+              <div class="text-center text-muted mb-4" v-if="false">
                   <small>Sign up</small>
               </div>
-              <form @submit.prevent="register()" role="form">
+              <form @submit.prevent="register()" role="form" style="margin-top: 20px">
                   <base-input alternative
                               type="text"
                               class="modal-input"
                               v-model="name"
-                              placeholder="Name"
+                              :placeholder="$t('labels.name')"
                               addon-left-icon="ni ni-single-02">
                   </base-input>
                   <base-input alternative
                               v-model="email"
                               class="mb-3 modal-input"
-                              placeholder="Email"
+                              :placeholder="$t('labels.email')"
                               addon-left-icon="ni ni-email-83">
                   </base-input>
                   <base-input alternative
                               v-model="password"
                               type="password"
                               class="modal-input"
-                              placeholder="Password"
+                              :placeholder="$t('labels.password')"
                               addon-left-icon="ni ni-lock-circle-open">
                   </base-input>
                   <div class="text-center">
-                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4">Create account</base-button>
+                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4">{{ $t('buttons.createAccount') }}</base-button>
                       <button v-else class="btn my-4 btn-orange" type="button" disabled>
                         <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                        Loading...
+                        {{ $t('buttons.loading') }}
                       </button>
                   </div>
                   <div v-if="errorMsg" class="text-center red">
                     {{ errorMsg }}
                   </div>
               </form>
-              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">Back to login</button>
+              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">{{ $t('buttons.backToLogin') }}</button>
           </template>
       </card>
   </modal>

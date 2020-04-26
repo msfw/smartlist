@@ -1,12 +1,12 @@
 <template>
   <div class="container">
 
-    <h1>My Lists</h1>
+    <h1>{{ $t('labels.myLists') }}</h1>
     <div class="column">
       <button type="button" @click="newList()" class="btn btn-outline-orange btn-circle btn-lg">
         <i class="fas fa-plus"/>
       </button>
-      <p >New list</p>
+      <p >{{ $t('labels.newList') }}</p>
     </div>
 
     <div class="scroll-area"  >
