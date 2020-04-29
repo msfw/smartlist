@@ -11,7 +11,8 @@ const buttons = {
   addItem: 'Adicionar item',
   cancel: 'Cancelar',
   confirm: 'Confirmar',
-  deleteList: 'Excluir lista'
+  deleteList: 'Excluir lista',
+  changePassword: 'Alterar senha'
 };
 
 export default buttons;

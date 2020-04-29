@@ -21,6 +21,11 @@
                     <a href="#" @click="modal.visible = true">{{ $t('buttons.login') }}</a>
                 </li>
 
+
+                <li v-if="isAuthenticated">
+                    <a href="#" @click="changePasswordButton()">{{ $t('buttons.changePassword') }}</a>
+                </li>
+
                 <li class="active" v-if="false">
                     <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
@@ -204,9 +209,21 @@ export default {
       this.loading = true;
     },
     cancelToken() {
-      this.$store.commit('cancelToken')
-      this.modal.template = 1;
-      this.errorMsg = '';
+      if (!this.$store.getters.isRequestingToken)
+      {
+        this.clearFields();
+        this.modal.visible = false
+      }
+      else
+      {
+        this.$store.commit('cancelToken')
+        this.modal.template = 1;
+        this.errorMsg = '';
+      }
+    },
+    changePasswordButton() {
+      this.modal.template = 4
+      this.modal.visible = true
     },
     clearFields() {
       this.name = '';

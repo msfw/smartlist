@@ -12,6 +12,7 @@ const buttons = {
   cancel: 'Cancel',
   confirm: 'Confirm',
   deleteList: 'Delete list',
+  changePassword: 'Change password'
 };
 
 export default buttons;
