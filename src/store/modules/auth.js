@@ -1,11 +1,15 @@
 import { http } from '../http-common';
+import { createI18n } from '../../i18n/index'
 
 const state = {
   user: {
     name: '',
     token: '',
     email: ''
-  }
+  },
+  requestingToken: false,
+  requestingEmail: '',
+  error: ''
 }
 
 const getters = {
@@ -20,10 +24,26 @@ const getters = {
   },
   getUserToken: state => {
     return state.user.token;
+  },
+  isRequestingToken: state => {
+    return state.requestingToken;
   }
 }
 
 const mutations = {
+  forgotpass_success(state, { email }) {
+    state.requestingToken = true;
+    state.requestingEmail = email;
+  },
+  changepass_success(state) {
+    state.requestingToken = false;
+    state.requestingEmail = '';
+  },
+  cancelToken(state) {
+    state.requestingToken = false;
+    state.requestingEmail = '';
+  },
+
   login() {
 
   },
@@ -37,12 +57,18 @@ const mutations = {
     state.user.email = user.email;
     state.user.token = token;
   },
-  login_error(state, error) {
+  auth_error(state, error) {
     var errormsg = '';
     if (error.response) {
-      errormsg = error.response.data.error ? error.response.data.error : 'Failed to login, try again later.'
+      if (error.response.data) {
+        if (error.response.data.error)
+          errormsg = error.response.data.error
+        else
+          errormsg = error.response.data
+      } else
+      errormsg = createI18n().t('labels.operationFailed')
     } else if (error.request) {
-      errormsg = error.request
+      errormsg = createI18n().t('labels.connectionRefused')
     } else {
       errormsg = error.message
     }
@@ -62,7 +88,7 @@ const actions = {
       dispatch('synchronize');
     })
     .catch(e => {
-      commit('login_error', e);
+      commit('auth_error', e);
     });
   },
   logout({ commit }) {
@@ -79,7 +105,26 @@ const actions = {
       commit('login_success', response.data);
     })
     .catch(e => {
-      commit('login_error', e);
+      commit('auth_error', e);
+    });
+  },
+  forgotPassword({ commit }, { email }) {
+    http.post('/auth/forgotPassword', { email })
+    .then(response => {
+      commit('forgotpass_success', { data: response.data, email: email });
+    })
+    .catch(e => {
+      commit('auth_error', e);
+    });
+  },
+  resetPassword({ state, getters, commit }, { password, oldPassword, token }) {
+    const manualReset = !getters.isRequestingToken;
+    http.post('/auth/resetPassword', { newPassword: password, oldPassword, token, email: state.requestingEmail, manualReset })
+    .then(() => {
+      commit('changepass_success');
+    })
+    .catch(e => {
+      commit('auth_error', e);
     });
   }
 }

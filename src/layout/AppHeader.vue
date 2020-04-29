@@ -21,7 +21,6 @@
                     <a href="#" @click="modal.visible = true">{{ $t('buttons.login') }}</a>
                 </li>
 
-
                 <li class="active" v-if="false">
                     <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false">Home</a>
                     <ul class="collapse list-unstyled" id="homeSubmenu">
@@ -68,76 +67,56 @@
             header-classes="bg-white pb-5"
             body-classes="px-lg-5 py-lg-5"
             class="border-0 bg-white">
-          <template v-if="modal.login">
-              <img src="../assets/logo.png" height="60" width="60" alt="logo"/>
-              <div class="text-center  mb-4" v-show="false">
-                  <small>{{ $t('labels.loginModalDescription') }}</small>
-              </div>
-              <form @submit.prevent="login()" role="form" style="margin-top: 20px">
-                  <base-input alternative
-                              v-model="email"
-                              class="mb-3 modal-input"
-                              :placeholder="$t('labels.email')"
-                              addon-left-icon="ni ni-email-83">
-                  </base-input>
-                  <base-input alternative
-                              v-model="password"
-                              type="password"
-                              class="modal-input"
-                              :placeholder="$t('labels.password')"
-                              addon-left-icon="ni ni-lock-circle-open">
-                  </base-input>
-                  <div class="text-center">
-                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4 btn-orange">{{ $t('buttons.login') }}</base-button>
-                      <button v-else class="btn my-4 btn-orange" type="button" disabled>
-                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                        {{ $t('buttons.loading') }}
-                      </button>
-                  </div>
-                  <div v-if="errorMsg" class="text-center red">
-                    {{ errorMsg }}
-                  </div>
-              </form>
-              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">{{ $t('buttons.createAccountDescription') }}</button>
+
+          <template v-if="modal.template == 1">
+              <login
+                :key="modal.visible"
+                :errorMsg="errorMsg"
+                :loading="loading"
+                @login="login($event)"
+                @forgotPassword="setTemplate(3)"
+                @signUp="setTemplate(2)"
+              >
+              </login>
           </template>
-          <template v-else>
-              <img src="../assets/logo.png" height="60" width="60" alt="logo"/>
-              <div class="text-center text-muted mb-4" v-if="false">
-                  <small>Sign up</small>
-              </div>
-              <form @submit.prevent="register()" role="form" style="margin-top: 20px">
-                  <base-input alternative
-                              type="text"
-                              class="modal-input"
-                              v-model="name"
-                              :placeholder="$t('labels.name')"
-                              addon-left-icon="ni ni-single-02">
-                  </base-input>
-                  <base-input alternative
-                              v-model="email"
-                              class="mb-3 modal-input"
-                              :placeholder="$t('labels.email')"
-                              addon-left-icon="ni ni-email-83">
-                  </base-input>
-                  <base-input alternative
-                              v-model="password"
-                              type="password"
-                              class="modal-input"
-                              :placeholder="$t('labels.password')"
-                              addon-left-icon="ni ni-lock-circle-open">
-                  </base-input>
-                  <div class="text-center">
-                      <base-button v-if="!loading" type="orange" nativeType="submit" class="my-4">{{ $t('buttons.createAccount') }}</base-button>
-                      <button v-else class="btn my-4 btn-orange" type="button" disabled>
-                        <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-                        {{ $t('buttons.loading') }}
-                      </button>
-                  </div>
-                  <div v-if="errorMsg" class="text-center red">
-                    {{ errorMsg }}
-                  </div>
-              </form>
-              <button class="btn btn-link btn-link-orange" v-if="!loading" @click="changeView()">{{ $t('buttons.backToLogin') }}</button>
+
+          <template v-else-if="modal.template == 2">
+              <sign-up
+                :key="modal.visible"
+                :errorMsg="errorMsg"
+                :loading="loading"
+                @register="register($event)"
+                @close="setTemplate(1)"
+              >
+              </sign-up>
+
+          </template>
+
+          <template v-else-if="modal.template == 3">
+              <forgot-password
+                :key="modal.visible"
+                :errorMsg="errorMsg"
+                :loading="loading"
+                @forgotPassword="forgotPassword($event)"
+                @newPassword="setTemplate(4)"
+                @close="setTemplate(1)"
+              >
+              </forgot-password>
+
+          </template>
+
+          <template v-else-if="modal.template == 4">
+              <new-password
+                :key="modal.visible"
+                :errorMsg="errorMsg"
+                :loading="loading"
+                :showToken="$store.getters.isRequestingToken"
+                @token="token = $event"
+                @changePassword="changePassword($event)"
+                @rollback="cancelToken()"
+              >
+              </new-password>
+
           </template>
       </card>
   </modal>
@@ -145,18 +124,24 @@
 </template>
 <script>
 import Modal from '../components/Modal'
+import SignUp from './components/SignUp'
+import Login from './components/Login'
+import ForgotPassword from './components/ForgotPassword'
+import NewPassword from './components/NewPassword'
+
 import JQuery from 'jquery'
 let $ = JQuery
 
 export default {
   components: {
-    Modal,
+    Modal, SignUp, Login, ForgotPassword, NewPassword
   },
   data() {
     return {
       modal: {
+        template: 1, // 1 = login, 2 = signup, 3 = forgot pass, 4 = new pass with token
         visible: false,
-        login: true
+        login: true,
       },
       name: '',
       email: '',
@@ -178,6 +163,11 @@ export default {
     }
   },
   methods: {
+    setTemplate(template) {
+      this.modal.template = template
+      this.errorMsg = ''
+      this.clearFields();
+    },
     changeView() {
       this.modal.login = !this.modal.login
       this.errorMsg = ''
@@ -186,29 +176,44 @@ export default {
     logout() {
       this.$store.commit('logout');
       this.$store.commit('clearLists');
+      this.modal.template = 1
       this.dismiss();
     },
-    login() {
+    login({ email, password}) {
+      this.errorMsg = ''
       this.$store.dispatch("login", {
-        email: this.email,
-        password: this.password
+        email, password
       });
       this.loading = true;
-      this.errorMsg = ''
     },
-    register() {
+    register({ name, email, password}) {
+      this.errorMsg = ''
       this.$store.dispatch("register", {
-        name: this.name,
-        email: this.email,
-        password: this.password
+        name,
+        email,
+        password
       });
       this.loading = true;
-      this.errorMsg = ''
+    },
+    forgotPassword({ email }) {
+      this.$store.dispatch("forgotPassword", { email });
+      this.loading = true;
+    },
+    changePassword({ password, oldPassword, token }) {
+      this.$store.dispatch("resetPassword", { password, oldPassword, token });
+      this.loading = true;
+    },
+    cancelToken() {
+      this.$store.commit('cancelToken')
+      this.modal.template = 1;
+      this.errorMsg = '';
     },
     clearFields() {
       this.name = '';
       this.email = '';
       this.password = '';
+      this.errorMsg = '';
+
     },
     sidebarCollapse() {
       $('#sidebar').addClass('active');
@@ -219,9 +224,11 @@ export default {
     dismiss() {
       $('#sidebar').removeClass('active');
       $('.overlay').removeClass('active');
+      this.errorMsg = ''
     }
   },
   mounted() {
+    this.errorMsg = ''
     this.$store.subscribe((mutation) => {
       if(mutation.type === 'login_success') {
         this.loading = false;
@@ -230,11 +237,27 @@ export default {
         this.clearFields();
         this.dismiss();
       }
-      if (mutation.type === 'login_error') {
+      if(mutation.type === 'forgotpass_success') {
+
+        this.loading = false;
+        this.clearFields();
+        this.dismiss();
+      }
+
+      if(mutation.type === 'changepass_success') {
+
+        this.loading = false;
+        this.clearFields();
+        this.dismiss();
+      }
+
+      if (mutation.type === 'auth_error') {
         this.loading = false
       }
     })
-    this.errorMsg = ''
+
+    if (this.$store.getters.isRequestingToken)
+      this.modal.template = 4
   },
 }
 </script>

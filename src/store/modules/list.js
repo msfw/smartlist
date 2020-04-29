@@ -2,6 +2,8 @@ import { uuid } from 'vue-uuid'
 import { http } from '../http-common';
 import router from '../../router';
 
+import { createI18n } from '../../i18n/index'
+
 const state = {
   lists: [],
   list: {
@@ -156,7 +158,7 @@ const mutations = {
     if (error.response) {
       errormsg = error.response.data.error ? error.response.data.error : `Failed to ${action}, try again later.`
     } else if (error.request) {
-      errormsg = error.request
+      errormsg = createI18n().t('labels.connectionRefused')
     } else {
       errormsg = error.message
     }

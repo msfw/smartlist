@@ -5,11 +5,15 @@ export function camel(str) {
 }
 
 export function camelActual(str) {
-  return (str || "").replace(/-(\w)/g, (_, c) => (c ? c.toUpperCase() : ""));
+  return (str || "").replace(/-(\w)/g, (_, c) => (c ? c.toUpperCase() : "_"));
 }
 
 export function kebab(str) {
-  return (str || "").replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
+  return (str || "").replace(/([a-z])([A-Z])/g, "$1-$2");
+}
+
+export function underline(str) {
+  return (str || "").replace(/-/g, "_");
 }
 
 export function capitalize(str) {

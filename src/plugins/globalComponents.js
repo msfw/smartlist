@@ -10,6 +10,7 @@ import BaseSlider from "../components/BaseSlider";
 import BaseSwitch from "../components/BaseSwitch";
 import Card from "../components/Card";
 import Icon from "../components/Icon";
+import { ValidationProvider, ValidationObserver } from 'vee-validate';
 //import VueNumberInput from '@chenfengyuan/vue-number-input'
 //import VueCurrencyInput from 'vue-currency-input'
 
@@ -32,6 +33,8 @@ export default {
     Vue.component('number-input', NumberInput);
    // Vue.component('currency-input', VueCurrencyInput);
 
+   Vue.component('ValidationProvider', ValidationProvider);
+   Vue.component('ValidationObserver', ValidationObserver);
 
   }
 };

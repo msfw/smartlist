@@ -5,6 +5,7 @@ const buttons = {
   forgotPassword: 'Esqueci minha senha',
   createAccount: 'Criar conta',
   createAccountDescription: 'Ou crie sua conta agora',
+  sendMail: 'Enviar email',
   loading: 'Carregando...',
   backToLogin: 'Voltar',
   addItem: 'Adicionar item',

@@ -1,6 +1,9 @@
 import Vue from 'vue'
 import VueCurrencyInput from 'vue-currency-input'
 import jQuery from 'jquery'
+import { localize } from 'vee-validate'
+
+import { getLocalization } from './utils/localization'
 import App from './App.vue'
 import router from './router'
 import store from './store'
@@ -15,11 +18,14 @@ import 'bootstrap'
 window.$ = window.jQuery = jQuery
 
 Vue.use(VueCurrencyInput)
-
-Vue.config.productionTip = false
 Vue.use(Smarket);
 
+Vue.config.productionTip = false
 const i18n = createI18n();
+
+const localization = getLocalization(i18n)
+localize(localization.locale, localization.messages);
+
 
 new Vue({
   router,
