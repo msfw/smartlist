@@ -120,7 +120,6 @@ const actions = {
   resetPassword({ state, getters, commit }, { password, oldPassword, token }) {
     const manualReset = !getters.isRequestingToken
     const email = state.requestingEmail || getters.getUserEmail
-    console.log(email, getters.getUserEmail)
     http.post('/auth/resetPassword', { newPassword: password, oldPassword, token, email, manualReset })
     .then(() => {
       commit('changepass_success');
