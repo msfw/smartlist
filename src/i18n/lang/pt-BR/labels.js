@@ -19,6 +19,10 @@ const labels = {
   passwordChangedError: 'Falha ao alterar a senha',
   connectionRefused: 'Falha ao se conectar com o servidor',
   passwordSame: 'Você deve usar uma senha diferente',
+  total: 'Total',
+  noItems: 'Sem itens para exibir',
+  currency: 'BRL',
+  locale: 'pt-BR',
 };
 
 export default labels;

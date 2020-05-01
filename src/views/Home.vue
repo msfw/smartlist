@@ -12,7 +12,7 @@
     <div class="scroll-area"  >
       <div class="mylist-content">
 
-          <div class="card cardlist align-left" style="width: 18rem;"
+          <div class="card cardlist align-left shadow" style="width: 18rem;"
             v-for="list in $store.state.list.lists"
             :key="list.sku"
             @click.stop="editList(list.sku)"
@@ -20,59 +20,54 @@
             <div class="card-body">
               <div class="d-flex">
                 <h5 class="card-title flex-grow-1">{{ list.name }}</h5>
+
                 <base-button
                   @click.stop="deleteList(list.sku, list._id)"
                   size="sm"
-                  type="danger btn-delete-list"
+                  type="danger orange btn-delete-list"
                   icon="fa fa-trash">
                 </base-button>
               </div>
-              <h6 class="card-subtitle mb-2 text-muted">{{ getDate(list.createdAt) }}</h6>
-              <div class="card-text"
-                v-for="item in list.items.slice(0, 5)"
-                :key="item.sku"
-              >
-                <i class="fas fa-check" :class="item.checked || 'invisible'"/>
-                <p>
-                  {{item.description}}
-                </p>
+
+              <h6 class="card-subtitle mb-2">{{ getDate(list.createdAt) }}</h6>
+
+              <div v-if="list.items && list.items.length > 0">
+                <div class="card-text"
+                  v-for="item in getOrderedItems(list.items)"
+                  :key="item.sku"
+                >
+                  <i class="fas fa-check" :class="item.checked || 'invisible'"/>
+                  <p>
+                    {{item.description}}
+                  </p>
+                </div>
+              </div>
+              <div v-else class="text-center no-items-container" style="height: 200px">
+                {{ $t('labels.noItems') }}
               </div>
 
               <a v-if="false" href="#" class="card-link">Card link</a>
+            </div>
+
+            <div v-if="list.type == 1" class="card-footer d-flex justify-content-between align-items-center">
+              <div class="total-desc">{{ $t('labels.total') }}</div>
+              <div class="total-value">{{ listTotalValue(list.items) }}</div>
             </div>
           </div>
         </div>
       </div>
 
-    <modal :show.sync="modal.visible">
-      <h6 slot="header" class="modal-title" id="modal-title-default">New list</h6>
-
-      <label for="typeSelect">List type</label>
-      <select class="form-control" id="typeSelect" v-model="modal.listType">
-        <option value="0">Select a type</option>
-        <option value="1">Normal</option>
-        <option value="2">Priced</option>
-      </select>
-
-      <template slot="footer">
-        <base-button type="primary" @click="newList">Save changes</base-button>
-        <router-link to="/list" tag="button" class="btn btn-primary">Select</router-link>
-        <base-button type="link" class="ml-auto" @click="modal.modal1 = false">Close
-        </base-button>
-      </template>
-    </modal>
   </div>
 
 </template>
 <script>
-import Modal from '../components/Modal'
 import moment from 'moment'
 //import vueCustomScrollbar from 'vue-custom-scrollbar'
 //import vuescroll from 'vuescroll';
 
 export default {
   components: {
-    Modal,
+    //Modal,
     //vuescroll
     //vueCustomScrollbar
   },
@@ -99,6 +94,22 @@ export default {
     },
     deleteList(sku, id) {
       this.$store.dispatch('deleteList', { listId: id, listSku: sku });
+    },
+    listTotalValue(items) {
+      var total = 0;
+      items.filter(i => i.checked).forEach(v => total += v.value);
+      return new Intl.NumberFormat(this.$t('labels.locale'), { style: 'currency', currency: this.$t('labels.currency') }).format(total);
+    },
+    getOrderedItems(items) {
+      var unchecked = items.filter(i => !i.checked);
+      if (unchecked && unchecked.length >= 5)
+        return unchecked.slice(0, 5)
+
+      var checked = items.filter(i => i.checked);
+      if (checked && checked.length > 0)
+        checked.forEach(c => unchecked.push(c))
+
+      return unchecked.slice(0, 5)
     }
   },
   created () {

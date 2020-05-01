@@ -50,19 +50,31 @@ $card-gradient: linear-gradient(0deg, rgb(245, 131, 96) 0%, rgba(253,153,116,1) 
   margin-top: 25px;
 }
 
-.cardlist p {
-    color: #d6d6d6;
-}
-
 .card-subtitle {
-    color: $white !important;
+//    color: $white !important;
     margin-bottom: 20px !important;
 }
   
 .cardlist:hover {
     //box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.3);
-    box-shadow: 0 5px 16px 0 rgba(0,0,0,0.2),0 6px 16px 0 rgba(0,0,0,0.19) !important; /* For positioning the pseudo-element */
+    //box-shadow: 0 5px 16px 0 rgba(0,0,0,0.2),0 6px 16px 0 rgba(0,0,0,0.19) !important; /* For positioning the pseudo-element */
+
     
+}
+
+.teste {
+  width: 100px;
+  height: 100px;
+  padding: 5px;
+  margin-bottom: 10px;
+}
+
+.shadow {
+  box-shadow: 0 0 0 1px black;
+  
+  &:hover {
+    box-shadow: 0 0 0 3px black;
+  }
 }
 
 /* The fast, new way! */
@@ -73,11 +85,51 @@ $card-gradient: linear-gradient(0deg, rgb(245, 131, 96) 0%, rgba(253,153,116,1) 
     cursor: pointer;
     min-width: 300px;
     min-height: 300px;
-    margin-right: 20px;
+    //margin-right: 20px;
+    margin: 10px;
     margin-bottom: 15px;
-    background: $card-gradient;
-    color: $white;
+    //background: $card-gradient;
+    background: $white;
+    color: $orange;
     border: none;
+}
+
+.card-footer {
+  font-weight: 700;
+  color: #b08d99
+}
+
+.no-items-container {
+  height: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  //background-color: #fafafa;
+  background: $card-gradient;
+  border-radius: 10px;
+  padding: 1px;
+  padding-left: 7px;
+  margin-bottom: 0.5rem;
+  //color: $orange;
+  color: $white;
+  
+}
+
+
+.card-text p {
+  margin: 0px;
+  margin-left: 10px;
+  font-size: 1.1em;
+  font-weight: 300;
+  line-height: 1.7em;
+  //color: $orange;
+  color: $white;
 }
 
 .mylist-content,
@@ -147,21 +199,6 @@ main {
     align-items: flex-start !important;
 }
 
-.card-text {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-
-.card-text p {
-  margin: 0px;
-  margin-left: 10px;
-  font-size: 1.1em;
-  font-weight: 300;
-  line-height: 1.7em;
-}
 
 .btn-circle {  
     width: 30px;
@@ -434,7 +471,7 @@ a:focus {
   }
   
   body {
-      background: #fafafa;
+      background: #F5F5F5;
   }
   
   p {

@@ -19,6 +19,10 @@ const labels = {
   passwordChangedError: 'Failed to change password',
   connectionRefused: 'Server connection failed',
   passwordSame: 'You cannot use the same password',
+  total: 'Total',
+  noItems: 'No items to show',
+  currency: 'USD',
+  locale: 'en',
 };
 
 export default labels;
