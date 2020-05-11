@@ -67,32 +67,6 @@ const mutations = {
 
     router.push('list/' + listSku);
   },
-
-
-  // obsoleto
-  /*
-  newList(state, payload) {
-    const list = {
-      _id: '',
-      sku: uuid.v1(),
-      name: '',
-      items: [],
-      type: payload.listType,
-      created: false,
-      synchronized: false,
-      createdAt: new Date()
-    }
-    const newList = [
-      ...state.lists,
-      list
-    ]
-    state.lists = newList;
-
-    router.push('list/' + list.sku);
-  },
-  editList(state, payload) {
-    //state.list = state.lists.find(x => x.sku == payload.sku);
-  },*/
   updateListName(state, payload) {
     let list = state.lists.find(x => x.sku == payload.sku);
 
@@ -244,13 +218,13 @@ const actions = {
           headers: { Authorization: `Bearer ${ getters.getUserToken }` }
         })
         .then(response => {
-          if (state.lists.length > 0) {
-            var existing = new Set(state.lists.map(d => d.sku));
-            var merged = [...state.lists, ...response.data.lists.filter(d => !existing.has(d.sku))];
+          /*if (state.lists.length > 0) {
+            //var existing = new Set(state.lists.map(d => d.sku));
+            //var merged = [...state.lists, ...response.data.lists.filter(d => !existing.has(d.sku))];
 
-            commit('loadList', merged)
+            //commit('loadList', merged)
           }
-          else
+          else*/
             commit('loadList', response.data.lists);
         }).catch(error => {
           commit('handleError', { error, action: 'load list' })
