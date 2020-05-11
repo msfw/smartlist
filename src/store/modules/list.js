@@ -210,7 +210,7 @@ const actions = {
         });
     }
   },
-  loadList({ state, getters, commit }) {
+  loadList({ getters, commit }) {
     if (getters.isLoggedIn) {
       http.get('/list',
         {
@@ -218,14 +218,7 @@ const actions = {
           headers: { Authorization: `Bearer ${ getters.getUserToken }` }
         })
         .then(response => {
-          /*if (state.lists.length > 0) {
-            //var existing = new Set(state.lists.map(d => d.sku));
-            //var merged = [...state.lists, ...response.data.lists.filter(d => !existing.has(d.sku))];
-
-            //commit('loadList', merged)
-          }
-          else*/
-            commit('loadList', response.data.lists);
+          commit('loadList', response.data.lists);
         }).catch(error => {
           commit('handleError', { error, action: 'load list' })
         })
